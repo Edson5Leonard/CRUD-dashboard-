@@ -1,47 +1,195 @@
+-- ============================================
+-- SCRIPT COMPLETO PARA MYSQL - GESTIÓN EMPLEADOS
+-- ============================================
+
+-- Eliminar base de datos si existe
+DROP DATABASE IF EXISTS gestion_empleados;
+
+-- Crear base de datos
 CREATE DATABASE gestion_empleados;
 
 USE gestion_empleados;
+-- ============================================
+-- CREACIÓN DE TABLAS
+-- ============================================
 
+-- Tabla tipos de empleado
 CREATE TABLE tipos_empleado (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre CHAR(35) NOT NULL
-);
+    nombre CHAR(35) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+-- Tabla áreas
 CREATE TABLE areas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre CHAR(35) NOT NULL
-);
+    nombre CHAR(35) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+-- Tabla principal de empleados
 CREATE TABLE empleados (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre CHAR(35) NOT NULL,
-    email CHAR(45) UNIQUE NOT NULL,
+    email CHAR(45) NOT NULL UNIQUE,
     salario DECIMAL(10,2),
     fecha_ingreso DATE,
     tipo_id INT,
     area_id INT,
-    FOREIGN KEY (tipo_id) REFERENCES tipos_empleado(id),
-    FOREIGN KEY (area_id) REFERENCES areas(id)
-);
+    categoria CHAR(30) NOT NULL DEFAULT 'Junior',
+    estado CHAR(20) NOT NULL DEFAULT 'Activo',
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (tipo_id) REFERENCES tipos_empleado(id) ON DELETE SET NULL,
+    FOREIGN KEY (area_id) REFERENCES areas(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- ============================================
+-- INSERCIÓN DE DATOS
+-- ============================================
 
-
--- Insertar datos --
-
+-- Insertar tipos de empleado
 INSERT INTO tipos_empleado (nombre) VALUES
 ('Administrativo'),
 ('Operativo'),
-('Supervisor');
+('Supervisor'),
+('Gerente'),
+('Asistente');
 
+-- Insertar áreas
 INSERT INTO areas (nombre) VALUES
 ('Sistemas'),
 ('RRHH'),
-('Logística');
+('Logística'),
+('Ventas'),
+('Marketing');
 
+-- Insertar empleados (15 registros con diferentes estados)
 INSERT INTO empleados 
-(nombre, email, salario, fecha_ingreso, tipo_id, area_id)
+(nombre, email, salario, fecha_ingreso, tipo_id, area_id, categoria, estado) 
 VALUES 
-('Omar Olivos', 'omar@email.com', 2800.00, '2026-01-10', 2, 3),
-('Carlos Díaz', 'carlos@email.com', 4000.00, '2025-12-15', 3, 1);
+('Omar Olivos', 'omar.olivos@empresa.com', 2800.00, '2026-01-10', 2, 3, 'Senior', 'Activo'),
+('Carlos Díaz', 'carlos.diaz@empresa.com', 4000.00, '2025-12-15', 3, 1, 'Senior', 'Activo'),
+('Ana Martínez', 'ana.martinez@empresa.com', 3200.00, '2026-02-01', 1, 2, 'Semi Senior', 'Vacaciones'),
+('Roberto Sánchez', 'roberto.sanchez@empresa.com', 2500.00, '2026-01-20', 2, 3, 'Junior', 'Activo'),
+('Laura Torres', 'laura.torres@empresa.com', 4500.00, '2025-11-10', 3, 1, 'Senior', 'Licencia'),
+('Pedro Gómez', 'pedro.gomez@empresa.com', 2900.00, '2026-01-05', 2, 4, 'Semi Senior', 'Activo'),
+('Mónica Flores', 'monica.flores@empresa.com', 3800.00, '2025-12-01', 4, 2, 'Senior', 'Inactivo'),
+('José Ruiz', 'jose.ruiz@empresa.com', 3100.00, '2026-01-15', 1, 5, 'Semi Senior', 'Capacitación'),
+('Carmen Vega', 'carmen.vega@empresa.com', 2700.00, '2026-02-10', 2, 3, 'Junior', 'Activo'),
+('Luis Torres', 'luis.torres@empresa.com', 3500.00, '2026-01-25', 4, 1, 'Senior', 'Vacaciones'),
+('Diana Paz', 'diana.paz@empresa.com', 2300.00, '2026-02-15', 5, 4, 'Trainee', 'Activo'),
+('Jorge Ríos', 'jorge.rios@empresa.com', 4100.00, '2025-10-20', 3, 2, 'Senior Plus', 'Activo'),
+('Silvia Luna', 'silvia.luna@empresa.com', 2950.00, '2026-01-18', 1, 5, 'Semi Senior', 'Inactivo'),
+('Andrés Gil', 'andres.gil@empresa.com', 3300.00, '2025-12-05', 2, 3, 'Semi Senior', 'Remoto'),
+('Patricia Rey', 'patricia.rey@empresa.com', 2600.00, '2026-02-20', 3, 1, 'Junior', 'Activo');
 
+-- ============================================
+-- CONSULTAS PARA EL DASHBOARD
+-- ============================================
+
+-- 1. TOTAL DE REGISTROS
+SELECT '1. TOTAL DE REGISTROS' AS 'CONSULTA';
+SELECT COUNT(*) AS total_registros FROM empleados;
+SELECT '' AS '';
+
+-- 2. TOTAL DE REGISTROS POR ESTADO (3 o más estados)
+SELECT '2. REGISTROS POR ESTADO' AS 'CONSULTA';
+SELECT 
+    estado,
+    COUNT(*) AS cantidad,
+    CONCAT(ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM empleados), 2), '%') AS porcentaje
+FROM empleados 
+GROUP BY estado
+ORDER BY cantidad DESC;
+SELECT '' AS '';
+
+-- 3. ÚLTIMO REGISTRO INSERTADO
+SELECT '3. ÚLTIMO REGISTRO INSERTADO' AS 'CONSULTA';
+SELECT 
+    id,
+    nombre,
+    categoria,
+    estado,
+    DATE_FORMAT(created_at, '%d/%m/%Y %H:%i:%s') AS fecha_creacion
+FROM empleados 
+ORDER BY created_at DESC 
+LIMIT 1;
+SELECT '' AS '';
+
+-- 4. ÚLTIMO REGISTRO ACTUALIZADO
+SELECT '4. ÚLTIMO REGISTRO ACTUALIZADO' AS 'CONSULTA';
+SELECT 
+    id,
+    nombre,
+    categoria,
+    estado,
+    DATE_FORMAT(updated_at, '%d/%m/%Y %H:%i:%s') AS fecha_actualizacion
+FROM empleados 
+ORDER BY updated_at DESC 
+LIMIT 1;
+SELECT '' AS '';
+
+-- 5. GRÁFICO 1: Empleados por Área
+SELECT '5. GRÁFICO - EMPLEADOS POR ÁREA' AS 'CONSULTA';
+SELECT 
+    a.nombre AS area,
+    COUNT(e.id) AS cantidad_empleados,
+    CONCAT(ROUND(COUNT(e.id) * 100.0 / (SELECT COUNT(*) FROM empleados), 2), '%') AS porcentaje
+FROM areas a
+LEFT JOIN empleados e ON a.id = e.area_id
+GROUP BY a.id, a.nombre
+ORDER BY cantidad_empleados DESC;
+SELECT '' AS '';
+
+-- 6. GRÁFICO 2: Empleados por Categoría
+SELECT '6. GRÁFICO - EMPLEADOS POR CATEGORÍA' AS 'CONSULTA';
+SELECT 
+    categoria,
+    COUNT(*) AS cantidad,
+    CONCAT(ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM empleados), 2), '%') AS porcentaje
+FROM empleados
+WHERE categoria IS NOT NULL
+GROUP BY categoria
+ORDER BY cantidad DESC;
+SELECT '' AS '';
+
+-- 7. GRÁFICO 3: Empleados por Tipo
+SELECT '7. GRÁFICO - EMPLEADOS POR TIPO' AS 'CONSULTA';
+SELECT 
+    t.nombre AS tipo_empleado,
+    COUNT(e.id) AS cantidad,
+    CONCAT(ROUND(COUNT(e.id) * 100.0 / (SELECT COUNT(*) FROM empleados), 2), '%') AS porcentaje
+FROM tipos_empleado t
+LEFT JOIN empleados e ON t.id = e.tipo_id
+GROUP BY t.id, t.nombre
+ORDER BY cantidad DESC;
+SELECT '' AS '';
+
+-- 8. RESUMEN COMPLETO PARA DASHBOARD
+SELECT '8. RESUMEN DASHBOARD' AS 'CONSULTA';
+SELECT 
+    (SELECT COUNT(*) FROM empleados) AS total_empleados,
+    
+    (SELECT COUNT(DISTINCT estado) FROM empleados) AS total_estados_diferentes,
+    
+    (SELECT CONCAT(nombre, ' (', DATE_FORMAT(created_at, '%d/%m/%Y'), ')') 
+     FROM empleados ORDER BY created_at DESC LIMIT 1) AS ultimo_insertado,
+    
+    (SELECT CONCAT(nombre, ' (', DATE_FORMAT(updated_at, '%d/%m/%Y'), ')') 
+     FROM empleados ORDER BY updated_at DESC LIMIT 1) AS ultimo_actualizado,
+    
+    (SELECT COUNT(*) FROM empleados WHERE estado = 'Activo') AS activos,
+    (SELECT COUNT(*) FROM empleados WHERE estado = 'Vacaciones') AS vacaciones,
+    (SELECT COUNT(*) FROM empleados WHERE estado = 'Inactivo') AS inactivos,
+    (SELECT COUNT(*) FROM empleados WHERE estado = 'Licencia') AS licencia,
+    
+    ROUND((SELECT AVG(salario) FROM empleados), 2) AS salario_promedio,
+    (SELECT MAX(salario) FROM empleados) AS salario_maximo,
+    (SELECT MIN(salario) FROM empleados) AS salario_minimo;
+
+-- ============================================
+-- VERIFICACIÓN FINAL
+-- ============================================
+SELECT 'VERIFICACIÓN DE DATOS' AS '';
+SELECT * FROM empleados ORDER BY id;
