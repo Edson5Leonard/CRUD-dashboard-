@@ -197,6 +197,18 @@ class Empleado {
         return await db.query(query);
     }
 
+    // ÁREAS (Para selector)
+    static async getAreas() {
+        const query = 'SELECT id, nombre FROM areas ORDER BY nombre ASC';
+        return await db.query(query);
+    }
+
+    // TIPOS (Para selector)
+    static async getTipos() {
+        const query = 'SELECT id, nombre FROM tipos_empleado ORDER BY nombre ASC';
+        return await db.query(query);
+    }
+
     // ESTADOS
     static async getEstados() {
         const query = `
