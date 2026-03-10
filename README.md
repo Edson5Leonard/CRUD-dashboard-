@@ -41,28 +41,36 @@ Cada empleado almacena:
 
 ## 📁 Estructura del proyecto
 
-
-gestion_empleados/
-├── config/
-│ └── db.js
-├── controllers/
-│ └── empleadoController.js
-├── factories/
-│ └── empleadoFactory.js
-├── models/
-│ └── empleadoModel.js
+/
+├── app.js                     # Archivo principal del backend
 ├── routes/
-│ └── empleadoRoutes.js
-├── views/
-│ ├── empleados.ejs
-│ └── empleado-form.ejs
-├── public/
-│ └── css/
-│ └── style.css
-├── .env
-└── app.js
-
-
+│   ├── apiRoutes.js            # Rutas API para dashboard y selectores
+│   └── empleadoRoutes.js        # Rutas API para CRUD de empleados
+├── controllers/
+│   ├── empleadoController.js    # Lógica de CRUD (responde con JSON)
+│   └── dashboardController.js    # (Antiguo, para EJS - quizás no se usa)
+├── models/
+│   └── empleadoModel.js         # Modelo con métodos de base de datos
+├── config/
+│   └── db.js                    # Conexión a MySQL (pool)
+├── client/                      # Frontend React
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/               # Componentes shadcn (card, button, etc.)
+│   │   │   ├── EmployeeList.jsx  # Lista de empleados con opciones CRUD
+│   │   │   ├── EmployeeForm.jsx   # Formulario de crear/editar
+│   │   │   └── Dashboard.jsx      # Dashboard con gráficos
+│   │   ├── App.jsx                # Configuración de rutas (React Router)
+│   │   ├── main.jsx               # Punto de entrada
+│   │   ├── index.css               # Estilos Tailwind
+│   │   └── lib/
+│   │       └── utils.js            # Utilidad cn para clases condicionales
+│   ├── package.json
+│   ├── vite.config.js
+│   └── tailwind.config.js
+├── package.json (raíz)           # Dependencias del backend
+└── .env                          # Variables de entorno (DB, puerto)
 ---
 
 ## 🧠 Patrones de Diseño Implementados
@@ -142,3 +150,32 @@ Cada empleado pertenece a:
 La base de datos está diseñada bajo principios de normalización y modelo relacional,
 permitiendo escalabilidad y mantenimiento profesional.
 
+## 🧠 Descargar librerias
+
+# 1. Crear proyecto React
+npm create vite@latest client -- --template react
+
+# 2. Entrar a client
+cd client
+
+# 3. Instalar dependencias base
+npm install
+
+# 4. Instalar Tailwind v3
+npm install -D tailwindcss@3 postcss autoprefixer
+npx tailwindcss init -p
+
+# 5. Inicializar shadcn
+npx shadcn-ui@latest init
+# (responde: default, slate, yes, tailwind.config.js, ./src/components/ui)
+
+# 6. Agregar componentes
+npx shadcn-ui@latest add card button
+
+# 7. Instalar recharts
+npm install recharts
+
+# 8. Configurar proxy en vite.config.js (editar manualmente)
+# 9. Crear Dashboard.jsx (código provisto)
+# 10. Modificar App.jsx
+# 11. Asegurar index.css

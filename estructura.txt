@@ -22,3 +22,38 @@ mi-crud/
 ├── .env
 ├── app.js
 └── package.json
+
+
+Actualizado : 
+
+/
+├── app.js                     # Archivo principal del backend
+├── routes/
+│   ├── apiRoutes.js            # Rutas API para dashboard y selectores
+│   └── empleadoRoutes.js        # Rutas API para CRUD de empleados
+├── controllers/
+│   ├── empleadoController.js    # Lógica de CRUD (responde con JSON)
+│   └── dashboardController.js    # (Antiguo, para EJS - quizás no se usa)
+├── models/
+│   └── empleadoModel.js         # Modelo con métodos de base de datos
+├── config/
+│   └── db.js                    # Conexión a MySQL (pool)
+├── client/                      # Frontend React
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/               # Componentes shadcn (card, button, etc.)
+│   │   │   ├── EmployeeList.jsx  # Lista de empleados con opciones CRUD
+│   │   │   ├── EmployeeForm.jsx   # Formulario de crear/editar
+│   │   │   └── Dashboard.jsx      # Dashboard con gráficos
+│   │   ├── App.jsx                # Configuración de rutas (React Router)
+│   │   ├── main.jsx               # Punto de entrada
+│   │   ├── index.css               # Estilos Tailwind
+│   │   └── lib/
+│   │       └── utils.js            # Utilidad cn para clases condicionales
+│   ├── package.json
+│   ├── vite.config.js
+│   └── tailwind.config.js
+├── package.json (raíz)           # Dependencias del backend
+└── .env                          # Variables de entorno (DB, puerto)
+
